@@ -15,30 +15,22 @@ class ErrorsChecker
     end
   end
 
-  def delete_beginning_spaces(str)
-    spaces_counter = 0
-    str.each_char do |char|
-      if char == " "
-        str = str.delete_prefix char
-        spaces_counter += 1
-      else
-        break
-      end
-    end
-    [str, spaces_counter]
-  end
-
-  def correct_identation
+  def correct_indentation
     @file_lines.each_with_index do |line, index|
       without_spaces_line = delete_beginning_spaces(line)[0]
+      without_spaces_previous_line = delete_beginning_spaces(@file_lines[index - 1])[0]
       spaces_counter_line = delete_beginning_spaces(line)[1]
       @file_lines[index + 1].nil? ? spaces_counter_next_line = spaces_counter_line + 2 : spaces_counter_next_line = delete_beginning_spaces(@file_lines[index + 1])[1]
+      @file_lines[index - 1].nil? ? spaces_counter_previous_line = -2 : spaces_counter_previous_line = delete_beginning_spaces(@file_lines[index - 1])[1]
       words_array = without_spaces_line.split
       first_word_in_line = words_array[0]
       for keyword in @keywords do
         if keyword == first_word_in_line && spaces_counter_next_line - spaces_counter_line != 2
           puts "Wrong indentation at line #{index + 2} in #{@file_name}"
         end
+      end
+      if first_word_in_line == 'end' && without_spaces_previous_line != 'end' && spaces_counter_previous_line - spaces_counter_line != 2
+        puts "End keyword isn't indented correctly at line #{index + 1} in #{@file_name}"
       end
     end
   end
@@ -58,5 +50,20 @@ class ErrorsChecker
 
   def empty_line_at_bottom
     puts "Please add an empty line at the bottom of your file #{@file_name}" if @file_lines[-1].empty? == false
+  end
+
+  private
+
+  def delete_beginning_spaces(str)
+    spaces_counter = 0
+    str.each_char do |char|
+      if char == " "
+        str = str.delete_prefix char
+        spaces_counter += 1
+      else
+        break
+      end
+    end
+    [str, spaces_counter]
   end
 end
