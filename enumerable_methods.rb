@@ -5,7 +5,6 @@ module Enumerable
 
   def my_each
     if block_given?
-
       if is_a?(Range)
         ary = to_a
         for value in ary do

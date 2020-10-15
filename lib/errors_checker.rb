@@ -10,45 +10,47 @@ class ErrorsChecker
   def trailing_space
     @file_lines.each_with_index do |line, index|
       if line.end_with?(" ")
-        puts "Trailing space at the end of the line number #{index + 1} in the file #{@file_name}"
+        puts "Trailing space at the end of the line number #{index + 1} in #{@file_name}"
       end
     end
   end
 
   def delete_beginning_spaces(str)
+    spaces_counter = 0
     str.each_char do |char|
       if char == " "
         str = str.delete_prefix char
+        spaces_counter += 1
       else
         break
       end
     end
-    str
+    [str, spaces_counter]
   end
 
-  # def correct_identation
-  #   @file_lines.each_with_index do |line, index|
-  #     for keyword in @keywords do
-  #       if line.include?(keyword)
-  #         keyword_index = line.index(keyword[0])
-  #         next_line = @file_lines[index + 1]
-  #         next_line.start_with?(" ") ? spaces_number_next_line = next_line.sub(next_line.delete_prefix(" "), "").count(" ") : spaces_number_next_line = 0
-  #         if spaces_number_next_line - keyword_index != 2
-  #           puts "Wrong indentation at line #{index + 2} in file #{@file_name}"
-  #         end
-  #       end
-  #     end
-  #   end
-  # end
+  def correct_identation
+    @file_lines.each_with_index do |line, index|
+      without_spaces_line = delete_beginning_spaces(line)[0]
+      spaces_counter_line = delete_beginning_spaces(line)[1]
+      @file_lines[index + 1].nil? ? spaces_counter_next_line = spaces_counter_line + 2 : spaces_counter_next_line = delete_beginning_spaces(@file_lines[index + 1])[1]
+      words_array = without_spaces_line.split
+      first_word_in_line = words_array[0]
+      for keyword in @keywords do
+        if keyword == first_word_in_line && spaces_counter_next_line - spaces_counter_line != 2
+          puts "Wrong indentation at line #{index + 2} in #{@file_name}"
+        end
+      end
+    end
+  end
 
   def empty_lines
     @file_lines.each_with_index do |line, index|
-      without_spaces_line = delete_beginning_spaces(line)
+      without_spaces_line = delete_beginning_spaces(line)[0]
       words_array = without_spaces_line.split
       first_word_in_line = words_array[0]
       for keyword in @keywords do
         if keyword == first_word_in_line && @file_lines[index + 1].empty?
-          puts "Unnecessary empty line (number: #{@file_lines[index + 1]}) in the file #{@file_name}"
+          puts "Unnecessary empty line (number: #{index + 2}) in #{@file_name}"
         end
       end
     end
