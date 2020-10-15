@@ -1,3 +1,4 @@
+require 'pry'
 class ErrorsChecker
   attr_reader :keywords
   def initialize(file_lines, file_name)
@@ -14,6 +15,17 @@ class ErrorsChecker
     end
   end
 
+  def delete_beginning_spaces(str)
+    str.each_char do |char|
+      if char == " "
+        str = str.delete_prefix char
+      else
+        break
+      end
+    end
+    str
+  end
+
   # def correct_identation
   #   @file_lines.each_with_index do |line, index|
   #     for keyword in @keywords do
@@ -28,4 +40,17 @@ class ErrorsChecker
   #     end
   #   end
   # end
+
+  def empty_lines
+    @file_lines.each_with_index do |line, index|
+      without_spaces_line = delete_beginning_spaces(line)
+      words_array = without_spaces_line.split
+      first_word_in_line = words_array[0]
+      for keyword in @keywords do
+        if keyword == first_word_in_line && @file_lines[index + 1].empty?
+          puts "Unnecessary empty line (number: #{@file_lines[index + 1]}) in the file #{@file_name}"
+        end
+      end
+    end
+  end
 end
