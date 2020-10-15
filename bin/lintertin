@@ -11,6 +11,7 @@ for file in select_files do
   check.trailing_space
   check.correct_identation
   check.empty_lines
+  check.empty_line_at_bottom
 end
 
 # file_lines = FileLines.new(select_files)

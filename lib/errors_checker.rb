@@ -55,4 +55,8 @@ class ErrorsChecker
       end
     end
   end
+
+  def empty_line_at_bottom
+    puts "Please add an empty line at the bottom of your file #{@file_name}" if @file_lines[-1].empty? == false
+  end
 end
