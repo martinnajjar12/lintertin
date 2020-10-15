@@ -12,8 +12,8 @@ def bubble_sort(array)
           sorted_array = array
         end
         i += 1
-      end
-    end
+      end         
+    end      
   end
   sorted_array
 end

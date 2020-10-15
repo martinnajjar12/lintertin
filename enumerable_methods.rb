@@ -12,7 +12,7 @@ module Enumerable
         end
       else
         for value in self do
-          yield(value)
+          yield(value)             
         end
       end
       self

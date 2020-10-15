@@ -1,16 +1,30 @@
 #!/usr/bin/env ruby
 require_relative '../lib/select_files'
-lines_array = select_files
-if lines_array.nil?
-  puts 'No Ruby file is detected!'
-  puts "Please, make sure you're in the right directory or your file ends with .rb extension."
-else
-  count = 0
-  lines_array.each_with_index do |array_line, index|
-    if array_line.end_with?(" ")
-      puts "Trainling spaces at the line number #{index + 1}"
-      count += 1
-    end
-  end
-  puts 'No offenses are detected' if count == 0
+require_relative '../lib/ruby_file'
+require_relative '../lib/errors_checker'
+
+for file in select_files do
+  new_file = RubyFile.new(file)
+  file_name = new_file.name
+  file_lines = new_file.lines_maker
+  check = ErrorsChecker.new(file_lines, file_name)
+  check.trailing_space
+  check.correct_identation
 end
+
+# file_lines = FileLines.new(select_files)
+# lines_array = file_lines.lines_maker
+# p lines_array
+# if lines_array.nil?
+#   puts 'No Ruby file is detected!'
+#   puts "Please, make sure you're in the right directory or your file ends with .rb extension."
+# else
+#   count = 0
+#   lines_array.each_with_index do |array_line, index|
+#     if array_line.end_with?(" ")
+#       puts "Trainling spaces at the line number #{index + 1}"
+#       count += 1
+#     end
+#   end
+#   puts 'No offenses are detected' if count == 0
+# end
