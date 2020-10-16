@@ -1,11 +1,11 @@
 require 'colorize'
-
+require 'pry'
 class ErrorsChecker
   attr_reader :keywords, :no_offenses
   def initialize(file_lines, file_name)
     @file_lines = file_lines
     @file_name = file_name
-    @keywords = %w[def class do if module begin for]
+    @keywords = %w[def class do if unless module begin while]
     @no_offenses = true
   end
 
@@ -58,6 +58,29 @@ class ErrorsChecker
     if @file_lines[-1].empty? == false
       @no_offenses = false
       puts "Please add an empty line at the bottom of your file #{@file_name}".red
+    end
+  end
+
+  def end_keyword
+    keyword_counter = 0
+    end_counter = 0
+    @file_lines.each do |line|
+      without_spaces_line = delete_beginning_spaces(line)[0]
+      next if without_spaces_line.start_with?('#')
+
+      words_array = line.split
+      for keyword in @keywords do
+        keyword_counter += 1 if words_array.include?(keyword)
+      end
+      end_counter += 1 if words_array.include?('end')
+      # binding.pry
+    end
+    if keyword_counter > end_counter
+      @no_offenses = false
+      puts "An end keyword is missing in #{@file_name}".red
+    elsif end_counter > keyword_counter
+      @no_offenses = false
+      puts "Your file #{@file_name} has an extra end keyword.".red
     end
   end
 

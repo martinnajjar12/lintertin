@@ -18,7 +18,7 @@ else
     check.correct_indentation
     check.empty_lines
     check.empty_line_at_bottom
-    # p new_file
+    check.end_keyword
     puts "#{file_name} has no offenses".green if check.no_offenses == true
   end
 end
