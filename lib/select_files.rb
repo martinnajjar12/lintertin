@@ -1,3 +1,7 @@
 def select_files
-  Dir.glob('*.rb')
+  if ARGV == []
+    Dir.glob('*.rb')
+  else
+    ARGV
+  end
 end
