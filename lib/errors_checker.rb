@@ -1,15 +1,19 @@
 require 'pry'
 class ErrorsChecker
-  attr_reader :keywords
+  attr_reader :keywords, :no_offenses
   def initialize(file_lines, file_name)
     @file_lines = file_lines
     @file_name = file_name
     @keywords = %w[def class do if module begin for]
+    @no_offenses = true
   end
 
   def trailing_spaces
     @file_lines.each_with_index do |line, index|
-      puts "Trailing space at the end of the line number #{index + 1} in #{@file_name}" if line.end_with?(' ')
+      if line.end_with? (' ')
+        @no_offenses = false
+        puts "Trailing space at the end of the line number #{index + 1} in #{@file_name}"
+      end
     end
   end
 
@@ -24,10 +28,12 @@ class ErrorsChecker
       first_word_in_line = words_array[0]
       @keywords.each do |keyword|
         if keyword == first_word_in_line && spaces_counter_next_line - spaces_counter_line != 2
+          @no_offenses = false
           puts "Wrong indentation at line #{index + 2} in #{@file_name}"
         end
       end
       if first_word_in_line == 'end' && without_spaces_previous_line != 'end' && spaces_counter_previous_line - spaces_counter_line != 2
+        @no_offenses = false
         puts "End keyword isn't indented correctly at line #{index + 1} in #{@file_name}"
       end
     end
@@ -40,6 +46,7 @@ class ErrorsChecker
       first_word_in_line = words_array[0]
       @keywords.each do |keyword|
         if keyword == first_word_in_line && @file_lines[index + 1].empty?
+          @no_offenses = false
           puts "Unnecessary empty line (number: #{index + 2}) in #{@file_name}"
         end
       end
@@ -47,7 +54,10 @@ class ErrorsChecker
   end
 
   def empty_line_at_bottom
-    puts "Please add an empty line at the bottom of your file #{@file_name}" if @file_lines[-1].empty? == false
+    if @file_lines[-1].empty? == false
+      @no_offenses = false
+      puts "Please add an empty line at the bottom of your file #{@file_name}"
+    end
   end
 
   private

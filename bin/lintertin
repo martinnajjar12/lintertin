@@ -3,15 +3,23 @@ require_relative '../lib/select_files'
 require_relative '../lib/ruby_file'
 require_relative '../lib/errors_checker'
 
-select_files.each do |file|
-  new_file = RubyFile.new(file)
-  file_name = new_file.name
-  file_lines = new_file.lines_maker
-  check = ErrorsChecker.new(file_lines, file_name)
-  check.trailing_spaces
-  check.correct_indentation
-  check.empty_lines
-  check.empty_line_at_bottom
+# If no files are detected
+if select_files == []
+  puts 'No Ruby file is detected!'
+  puts "Please, make sure you're in the right directory or your file ends with .rb extension."
+else
+  select_files.each do |file|
+    new_file = RubyFile.new(file)
+    file_name = new_file.name
+    file_lines = new_file.lines_maker
+    check = ErrorsChecker.new(file_lines, file_name)
+    check.trailing_spaces
+    check.correct_indentation
+    check.empty_lines
+    check.empty_line_at_bottom
+    # p new_file
+    puts "#{file_name} has no offenses" if check.no_offenses == true
+  end
 end
 
 # file_lines = FileLines.new(select_files)
