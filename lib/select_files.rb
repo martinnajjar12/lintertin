@@ -1,3 +1,3 @@
 def select_files
-  ruby_files = Dir.glob("*.rb")
+  Dir.glob('*.rb')
 end

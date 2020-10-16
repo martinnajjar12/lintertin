@@ -12,7 +12,7 @@ class RubyFile
     File.foreach(opened_file) do |line|
       lines_array << line.chomp
     end
-    lines_array << "" if read_file.end_with?("\n") || read_file.end_with?("\r\n")
+    lines_array << '' if read_file.end_with?("\n") || read_file.end_with?("\r\n")
     opened_file.close
     lines_array
   end
