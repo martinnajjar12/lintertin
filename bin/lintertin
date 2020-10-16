@@ -4,11 +4,7 @@ require_relative '../lib/select_files'
 require_relative '../lib/ruby_file'
 require_relative '../lib/errors_checker'
 
-# If no files are detected
-if select_files == []
-  puts 'No Ruby file is detected!'
-  puts "Please, make sure you're in the right directory or your file ends with .rb extension."
-else
+if File.exist?(select_files[0])
   select_files.each do |file|
     new_file = RubyFile.new(file)
     file_name = new_file.name
@@ -21,6 +17,18 @@ else
     check.end_keyword
     check.braces_brackets_parenthesis
     check.pipes
-    puts "#{file_name} has no offenses".green if check.no_offenses == true
+    if check.no_offenses
+      puts "#{file_name} has no offenses".green
+    else
+      check.errors.each do |error|
+        puts error.red
+      end
+    end
+    # puts "#{file_name} has no offenses".green if check.no_offenses == true
   end
+else
+  puts 'No file is detected!'.red
+  puts "If you're selecting the file implicitly, make sure it ends with .rb extension".light_blue
+  puts "If you're selecting the file explicitly, make sure you don't have a typo".light_blue
+  puts "Finally, make sure you're file is in the root directory".light_blue
 end
