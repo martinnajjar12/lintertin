@@ -1,4 +1,5 @@
 require 'colorize'
+# rubocop:disable Metrics/PerceivedComplexity, Style/GuardClause, Layout/LineLength, Metrics/ClassLength, Metrics/CyclomaticComplexity
 
 class ErrorsChecker
   attr_reader :keywords, :no_offenses, :opening_signs, :closing_signs
@@ -13,7 +14,7 @@ class ErrorsChecker
 
   def trailing_spaces
     @file_lines.each_with_index do |line, index|
-      if line.end_with? (' ')
+      if line.end_with? ' '
         @no_offenses = false
         puts "Trailing space at the end of the line number #{index + 1} in #{@file_name}".red
       end
@@ -57,6 +58,7 @@ class ErrorsChecker
   end
 
   def empty_line_at_bottom
+    # (@no_offenses = false && puts "Please add an empty line at the bottom of your file #{@file_name}".red if @file_lines[-1].empty? == false)
     if @file_lines[-1].empty? == false
       @no_offenses = false
       puts "Please add an empty line at the bottom of your file #{@file_name}".red
@@ -71,7 +73,7 @@ class ErrorsChecker
       next if without_spaces_line.start_with?('#')
 
       words_array = without_spaces_line.split
-      for keyword in @keywords do
+      @keywords.each do |keyword|
         keyword_counter += 1 if words_array.include?(keyword)
       end
       end_counter += 1 if words_array.include?('end')
@@ -85,6 +87,7 @@ class ErrorsChecker
     end
   end
 
+  # rubocop:disable Metrics/MethodLength
   def braces_brackets_parenthesis
     opening_brace_counter = 0
     opening_bracket_counter = 0
@@ -92,7 +95,6 @@ class ErrorsChecker
     closing_brace_counter = 0
     closing_bracket_counter = 0
     closing_parenthesis_counter = 0
-    pipe_counter = 0
 
     @file_lines.each do |line|
       without_spaces_line = delete_beginning_spaces(line)[0]
@@ -116,17 +118,18 @@ class ErrorsChecker
       puts "Missing '[' or ']' in #{@file_name}".red
     end
 
-    if opening_parenthesis_counter != closing_parenthesis_counter
+    unless opening_parenthesis_counter == closing_parenthesis_counter
       @no_offenses = false
       puts "Missing '(' or ')' in #{@file_name}".red
     end
   end
+  # rubocop:enable Metrics/MethodLength
 
   def pipes
     pipe_spaces = after_before_pipe_space
     if pipe_spaces.class == String
       puts pipe_spaces
-      return pipe_spaces
+      # pipe_spaces
     else
       opening_pipes_counter = 0
       closing_pipes_counter = 0
@@ -136,7 +139,7 @@ class ErrorsChecker
         next if without_spaces_line.start_with?('#')
 
         words_array = without_spaces_line.split
-        for word in words_array do
+        words_array.each do |word|
           opening_pipes_counter += 1 if word.start_with?('|')
           closing_pipes_counter += 1 if word.end_with?('|')
         end
@@ -146,7 +149,7 @@ class ErrorsChecker
         @no_offenses = false
         puts "'|' is missing in #{@file_name}".red
       end
-      end
+    end
   end
 
   private
@@ -168,7 +171,7 @@ class ErrorsChecker
       next if without_spaces_line.start_with?('#')
 
       words_array = without_spaces_line.split
-      for word in words_array do
+      words_array.each do |word|
         if word == '|'
           @no_offenses = false
           return "Unwanted space before/after '|' in line number #{index + 1}".red
@@ -177,3 +180,5 @@ class ErrorsChecker
     end
   end
 end
+
+# rubocop:enable Metrics/PerceivedComplexity, Style/GuardClause, Layout/LineLength, Metrics/ClassLength, Metrics/CyclomaticComplexity

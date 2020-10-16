@@ -24,20 +24,3 @@ else
     puts "#{file_name} has no offenses".green if check.no_offenses == true
   end
 end
-
-# file_lines = FileLines.new(select_files)
-# lines_array = file_lines.lines_maker
-# p lines_array
-# if lines_array.nil?
-#   puts 'No Ruby file is detected!'
-#   puts "Please, make sure you're in the right directory or your file ends with .rb extension."
-# else
-#   count = 0
-#   lines_array.each_with_index do |array_line, index|
-#     if array_line.end_with?(" ")
-#       puts "Trainling spaces at the line number #{index + 1}"
-#       count += 1
-#     end
-#   end
-#   puts 'No offenses are detected' if count == 0
-# end
