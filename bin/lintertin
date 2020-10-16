@@ -19,6 +19,8 @@ else
     check.empty_lines
     check.empty_line_at_bottom
     check.end_keyword
+    check.braces_brackets_parenthesis
+    check.pipes
     puts "#{file_name} has no offenses".green if check.no_offenses == true
   end
 end

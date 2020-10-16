@@ -278,59 +278,10 @@ module Enumerable
       to_enum :my_map
     end
   end
-
-  def my_inject(initial = nil, argument = nil)
-    accum = 0
-    if initial.nil? && argument.nil?
-      ary = if is_a?(Range)
-              to_a
-            else
-              self
-            end
-      my_each_with_index do |element, index|
-        break if index + 1 == ary.length
-
-        accum = if index.zero?
-                  yield(element, ary[index + 1])
-                else
-                  yield(accum, ary[index + 1])
-                end
-      end
-    elsif argument.nil?
-      if initial.class == Symbol
-        argument = initial
-        ary = if self.class == Range
-                to_a
-              else
-                self
-              end
-        ary.my_each_with_index do |element, index|
-          break if index + 1 == ary.length
-
-          accum = if index.zero?
-                    element.public_send argument.to_s, ary[index + 1]
-                  else
-                    accum.public_send argument.to_s, ary[index + 1]
-                  end
-        end
-      else
-        accum = initial
-        my_each do |element|
-          accum = yield(accum, element)
-        end
-      end
-    else
-      accum = initial
-      my_each do |element|
-        accum = accum.public_send argument.to_s, element
-      end
-    end
-    accum
-  end
 end
 
 def multiply_els(array)
-  array.my_inject { |sum, num| sum * num }
+  array.my_inject { |sum, num|  sum * num }
 end
 
 # rubocop:enable Style/For, Style/MultipleComparison, Metrics/AbcSize
