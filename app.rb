@@ -9,7 +9,7 @@ def bubble_sort(array)
           next_value = array[i + 1]
           array[i + 1] = array[i]
           array[i] = next_value
-          sorted_array = array
+          sorted_array = array   
         end
         i += 1
       end

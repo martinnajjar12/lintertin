@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+require 'colorize'
 require_relative '../lib/select_files'
 require_relative '../lib/ruby_file'
 require_relative '../lib/errors_checker'
@@ -18,7 +19,7 @@ else
     check.empty_lines
     check.empty_line_at_bottom
     # p new_file
-    puts "#{file_name} has no offenses" if check.no_offenses == true
+    puts "#{file_name} has no offenses".green if check.no_offenses == true
   end
 end
 
