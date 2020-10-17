@@ -2,13 +2,19 @@
 
 <h1 align="center">Lintertin</h1>
 
-> This is a simple Ruby linter, used to improve code quality and readability. Its name is Lintertin, linter because it's a linter, and tin from the end of my name (Martin) 😉
+> This is a simple Ruby linter, used to improve code quality and readability.
 
-You can test a single file, and also you can test all the files that exist in the root directory by using this linter.
+You're working with Ruby and not sure what the best practices are?? **Lintertin** will help you. You can test a single file, and also you can test all the files that exist in the root directory by using this linter.
 
 ## Good and Bad examples
 
+Take a look at the cops Lintertin warn you about:
+
 ### Trailing spaces
+
+<p>Lintertin checks if there is a trailing space at the end of the line:</p>
+
+Bad Example:
 
 ```Bad Example
 class ForTest
@@ -17,6 +23,8 @@ class ForTest
 end
 
 ```
+
+Good Example
 
 ```Good Example
 class ForTest
@@ -28,6 +36,10 @@ end
 
 ### Correct indentation
 
+<p>Lintertin checks if the lines are correctly indented:</p>
+
+Bad Example:
+
 ```Bad Example
 class ForTest
 def method
@@ -35,6 +47,8 @@ def method
 end
 
 ```
+
+Good Example
 
 ```Good Example
 class ForTest
@@ -46,6 +60,10 @@ end
 
 ### Empty lines
 
+<p>Lintertin checks if there's an unwanted empty line after a certain keyword:</p>
+
+Bad Example:
+
 ```Bad Example
 class ForTest
 
@@ -54,6 +72,8 @@ class ForTest
 end
 
 ```
+
+Good Example
 
 ```Good Example
 class ForTest
@@ -65,12 +85,18 @@ end
 
 ### Single empty line at the bottom of the file
 
+<p>Lintertin checks if there's no empty line at the end of the file:</p>
+
+Bad Example:
+
 ```Bad Example
 class ForTest
   def method
   end
 end
 ```
+
+Good Example
 
 ```Good Example
 class ForTest
@@ -86,6 +112,10 @@ Consider the following examples:
 
 #### Parenthesis
 
+<p>Lintertin checks if there is a missing parenthesis:</p>
+
+Bad Example:
+
 ```Bad Example
 class ForTest
   def method(param
@@ -93,6 +123,8 @@ class ForTest
 end
 
 ```
+
+Good Example
 
 ```Good Example
 class ForTest
@@ -104,6 +136,10 @@ end
 
 #### Braces
 
+<p>Lintertin checks if there is a missing curly brace:</p>
+
+Bad Example:
+
 ```Bad Example
 class ForTest
   def method(array)
@@ -112,6 +148,8 @@ class ForTest
 end
 
 ```
+
+Good Example
 
 ```Good Example
 class ForTest
@@ -124,6 +162,10 @@ end
 
 #### Brackets
 
+<p>Lintertin checks if there is a missing bracket:</p>
+
+Bad Example:
+
 ```Bad Example
 class ForTest
   def method(array)
@@ -132,6 +174,8 @@ class ForTest
 end
 
 ```
+
+Good Example
 
 ```Good Example
 class ForTest
@@ -144,7 +188,13 @@ end
 
 ### Pipes |
 
+Lintertin checks if the file has a missing pipe or a space before or after the pipe.
+
 #### Spaces before or after the pipe
+
+<p>Lintertin checks if there is an unwanted space before or after the pipe:</p>
+
+Bad Example:
 
 ```Bad Example
 class ForTest
@@ -155,6 +205,8 @@ class ForTest
 end
 
 ```
+
+Good Example
 
 ```Good Example
 class ForTest
@@ -168,6 +220,10 @@ end
 
 #### Missing pipe
 
+<p>Lintertin checks if there is a missing pipe:</p>
+
+Bad Example:
+
 ```Bad Example
 class ForTest
   def method(array)
@@ -177,6 +233,8 @@ class ForTest
 end
 
 ```
+
+Good Example
 
 ```Good Example
 class ForTest
@@ -189,6 +247,58 @@ end
 ```
 
 **Warning:** If there's a space before or after the pipe, then it will not check for a missing one.
+
+### End keyword
+
+Lintertin checks if there's a missing `end` or an extra `end`:
+
+#### Missing end
+
+Lintertin checks if there's a missing `end`:
+
+<p>Bad Example</p>
+
+```Bad Example
+class ForTest
+  def method
+end
+
+```
+
+Good Example
+
+```Good Example
+class ForTest
+  def method
+  end
+end
+
+```
+
+#### Extra end
+
+Lintertin also checks if there's an extra `end`:
+
+<p>Bad Example</p>
+
+```Bad Example
+class ForTest
+  def method
+  end
+end
+end
+
+```
+
+Good Example
+
+```Good Example
+class ForTest
+  def method
+  end
+end
+
+```
 
 **Warning:** This linter doesn't work with the inline `if` and inline `unless`!! For instance:
 
