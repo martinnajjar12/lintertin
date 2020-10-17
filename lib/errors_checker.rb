@@ -15,15 +15,16 @@ class ErrorsChecker
   def trailing_spaces
     got_offenses = false
     @file_lines.each_with_index do |line, index|
-      if line.end_with? ' '
-        @no_offenses = false
-        got_offenses = true
-        @errors << "Trailing space at the end of the line number #{index + 1} in #{@file_name}"
-      end
+      next unless line.end_with? ' '
+
+      @no_offenses = false
+      got_offenses = true
+      @errors << "Trailing space at the end of the line number #{index + 1} in #{@file_name}"
     end
-    return "Trailing space detected" if got_offenses
+    return 'Trailing space detected' if got_offenses
   end
 
+  # rubocop:disable Metrics/MethodLength
   def correct_indentation
     got_offenses = false
     @file_lines.each_with_index do |line, index|
@@ -35,20 +36,21 @@ class ErrorsChecker
       words_array = without_spaces_line.split
       first_word_in_line = words_array[0]
       @keywords.each do |keyword|
-        if keyword == first_word_in_line && spaces_counter_next_line - spaces_counter_line != 2
-          @no_offenses = false
-          got_offenses = true
-          @errors << "Wrong indentation at line #{index + 2} in #{@file_name}"
-        end
-      end
-      if first_word_in_line == 'end' && without_spaces_previous_line != 'end' && spaces_counter_previous_line - spaces_counter_line != 2
+        next unless keyword == first_word_in_line && spaces_counter_next_line - spaces_counter_line != 2
+
         @no_offenses = false
         got_offenses = true
-        @errors << "End keyword isn't indented correctly at line #{index + 1} in #{@file_name}"
+        @errors << "Wrong indentation at line #{index + 2} in #{@file_name}"
       end
+      next unless first_word_in_line == 'end' && without_spaces_previous_line != 'end' && spaces_counter_previous_line - spaces_counter_line != 2
+
+      @no_offenses = false
+      got_offenses = true
+      @errors << "End keyword isn't indented correctly at line #{index + 1} in #{@file_name}"
     end
-    return "Wrong indentation detected" if got_offenses
+    return 'Wrong indentation detected' if got_offenses
   end
+  # rubocop:enable Metrics/MethodLength
 
   def empty_lines
     got_offenses = false
@@ -57,14 +59,14 @@ class ErrorsChecker
       words_array = without_spaces_line.split
       first_word_in_line = words_array[0]
       @keywords.each do |keyword|
-        if keyword == first_word_in_line && @file_lines[index + 1].empty?
-          @no_offenses = false
-          got_offenses = true
-          @errors << "Unnecessary empty line (number: #{index + 2}) in #{@file_name}"
-        end
+        next unless keyword == first_word_in_line && @file_lines[index + 1].empty?
+
+        @no_offenses = false
+        got_offenses = true
+        @errors << "Unnecessary empty line (number: #{index + 2}) in #{@file_name}"
       end
     end
-    return "Unnecessary empty line detected" if got_offenses
+    return 'Unnecessary empty line detected' if got_offenses
   end
 
   def empty_line_at_bottom
@@ -74,9 +76,10 @@ class ErrorsChecker
       got_offenses = true
       @errors << "Please add an empty line at the bottom of your file #{@file_name}"
     end
-    return "Please add an empty line at the bottom of your file" if got_offenses
+    return 'Please add an empty line at the bottom of your file' if got_offenses
   end
 
+  # rubocop:disable Metrics/MethodLength
   def end_keyword
     got_offenses = false
     keyword_counter = 0
@@ -100,10 +103,9 @@ class ErrorsChecker
       got_offenses = true
       @errors << "Your file #{@file_name} has an extra end keyword."
     end
-    return "Syntax error!" if got_offenses
+    return 'Syntax error!' if got_offenses
   end
 
-  # rubocop:disable Metrics/MethodLength
   def braces_brackets_parenthesis
     got_offenses = false
     opening_brace_counter = 0
@@ -142,9 +144,8 @@ class ErrorsChecker
       got_offenses = true
       @errors << "Missing '(' or ')' in #{@file_name}"
     end
-    return "curly braces, square brackets or parenthesis is missing" if got_offenses
+    return 'curly braces, square brackets or parenthesis is missing' if got_offenses
   end
-  # rubocop:enable Metrics/MethodLength
 
   def pipes
     got_offenses = false
@@ -174,6 +175,7 @@ class ErrorsChecker
     end
     return "'|' is missing" if got_offenses
   end
+  # rubocop:enable Metrics/MethodLength
 
   private
 
@@ -196,11 +198,11 @@ class ErrorsChecker
 
       words_array = without_spaces_line.split
       words_array.each do |word|
-        if word == '|'
-          @no_offenses = false
-          got_offenses = true
-          @errors << "Unwanted space before/after '|' in line number #{index + 1}"
-        end
+        next unless word == '|'
+
+        @no_offenses = false
+        got_offenses = true
+        @errors << "Unwanted space before/after '|' in line number #{index + 1}"
       end
     end
     return "Unwanted space before/after '|'" if got_offenses

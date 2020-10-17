@@ -1,6 +1,6 @@
 require 'colorize'
 require_relative '../lib/errors_checker'
-files = Dir.glob("*.rb")
+files = Dir.glob('*.rb')
 opened_file = File.open(files[0])
 lines_array = []
 File.foreach(opened_file) { |line| lines_array << line.chomp }
@@ -10,13 +10,13 @@ describe ErrorsChecker do
 
   describe '#trailing_spaces' do
     it "returns an error if there's a trainling space at the end of the line" do
-      expect(errors_instance.trailing_spaces).to eql("Trailing space detected")
+      expect(errors_instance.trailing_spaces).to eql('Trailing space detected')
     end
   end
 
   describe '#correct_indentation' do
     it "returns an error if the line isn't indented correctly" do
-      expect(errors_instance.correct_indentation).to eql("Wrong indentation detected")
+      expect(errors_instance.correct_indentation).to eql('Wrong indentation detected')
     end
   end
 
@@ -38,11 +38,13 @@ describe ErrorsChecker do
     end
   end
 
+  # rubocop:disable Layout/LineLength
   describe '#braces_brackets_parenthesis' do
     it 'returns an error if there is a missing curly brace, square bracket or parenthesis' do
       expect(errors_instance.braces_brackets_parenthesis).to eql('curly braces, square brackets or parenthesis is missing')
     end
   end
+  # rubocop:enable Layout/LineLength
 
   describe '#pipes' do
     context 'there is an unnecessary space before or after the pipe' do
