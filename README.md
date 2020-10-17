@@ -314,6 +314,7 @@ return 'something' unless I'm_true
 
 - Ruby
 - Rubocop: as a linter
+- RSpec: as a tester
 
 ## Getting Started
 
@@ -335,7 +336,14 @@ Open your terminal, type `git clone https://github.com/martinnajjar12/lintertin.
 
 ### Usage
 
-This linter is used to maintain code quality and improve readability.
+Follow these steps to scan your files:
+
+- Clone this repository as explained [here](#setup)
+- Put the files you want to scan in the root directory of this project as shown below (like `for_test.rb` file):
+
+  ![How your folders and files should look like](./folders_example.png)
+
+- Now you can simply run the command `bin/lintertin` in your terminal to check all the Ruby files that exist in the root directory, or `bin/lintertin <the name of the file you want to scan>` if you want to scan a specific file.
 
 ### Run tests
 
