@@ -1,4 +1,3 @@
-require 'colorize'
 require_relative '../lib/errors_checker'
 files = Dir.glob('*.rb')
 opened_file = File.open(files[0])
