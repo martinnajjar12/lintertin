@@ -24,17 +24,17 @@ You're working with Ruby and not sure what the best practices are?? **Lintertin*
     - [Parenthesis](#parenthesis)
     - [Braces](#braces)
     - [Brackets](#brackets)
-  - [Pipes |](#pipes-|)
+  - [Pipes |](#pipes-)
     - [Spaces before or after the pipe](#spaces-before-or-after-the-pipe)
     - [Missing pipe](#missing-pipe)
   - [End keyword](#end-keyword)
     - [Missing end](#missing-end)
     - [Extra end](#extra-end)
 - [Author](#author)
-- [🤝 Contributing](#🤝-contributing)
+- [🤝 Contributing](#-contributing)
 - [Show your support](#show-your-support)
 - [Acknowledgments](#acknowledgments)
-  - [📝 License](#📝-license)
+  - [📝 License](#-license)
 
 ## Built With
 
