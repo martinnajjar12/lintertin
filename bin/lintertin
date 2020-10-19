@@ -4,7 +4,7 @@ require_relative '../lib/select_files'
 require_relative '../lib/ruby_file'
 require_relative '../lib/errors_checker'
 
-if File.exist?(select_files[0])
+if select_files != [] && File.exist?(select_files[0])
   select_files.each do |file|
     new_file = RubyFile.new(file)
     file_name = new_file.name
@@ -24,7 +24,6 @@ if File.exist?(select_files[0])
         puts error.red
       end
     end
-    # puts "#{file_name} has no offenses".green if check.no_offenses == true
   end
 else
   puts 'No file is detected!'.red
