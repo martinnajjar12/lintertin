@@ -21,7 +21,7 @@ if select_files != [] && File.exist?(select_files[0])
       puts "#{file_name} has no offenses".green
     else
       check.errors.each do |error|
-        puts error.red
+        puts "• #{error.red}"
       end
     end
   end
