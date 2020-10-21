@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+require 'colorize'
+require_relative '../lib/select_files'
+require_relative '../lib/ruby_file'
+require_relative '../lib/errors_checker'
+
+if select_files != [] && File.exist?(select_files[0])
+  select_files.each do |file|
+    new_file = RubyFile.new(file)
+    file_name = new_file.name
+    file_lines = new_file.lines_maker
+    check = ErrorsChecker.new(file_lines, file_name)
+    check.trailing_spaces
+    check.correct_indentation
+    check.empty_lines
+    check.empty_line_at_bottom
+    check.end_keyword
+    check.tokens
+    check.pipes
+    if check.no_offenses
+      puts "#{file_name} has no offenses".green
+    else
+      check.errors.each do |error|
+        puts "• #{error.red}"
+      end
+    end
+  end
+else
+  puts 'No file is detected!'.red
+  puts "If you're selecting the file implicitly, make sure it ends with .rb extension".light_blue
+  puts "If you're selecting the file explicitly, make sure you don't have a typo".light_blue
+  puts "Finally, make sure you're file is in the root directory".light_blue
+end
