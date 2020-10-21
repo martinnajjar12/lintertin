@@ -37,13 +37,11 @@ describe ErrorsChecker do
     end
   end
 
-  # rubocop:disable Layout/LineLength
   describe '#tokens' do
     it 'returns an error if there is a missing curly brace, square bracket or parenthesis' do
       expect(errors_instance.tokens).to eql(true)
     end
   end
-  # rubocop:enable Layout/LineLength
 
   describe '#pipes' do
     it 'returns an error if there is a space before or after the pipe or a missing pipe' do
