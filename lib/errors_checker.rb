@@ -1,14 +1,58 @@
-# rubocop:disable Metrics/PerceivedComplexity, Style/GuardClause, Layout/LineLength, Metrics/ClassLength, Metrics/CyclomaticComplexity
+module HelperModule
+  def delete_beginning_spaces(str)
+    spaces_counter = 0
+    str.each_char do |char|
+      break unless char == ' '
+
+      str = str.delete_prefix char
+      spaces_counter += 1
+    end
+    [str, spaces_counter]
+  end
+
+  def iterate_thrgh_lines
+    @file_lines.each_with_index do |line, index|
+      without_spaces_line = delete_beginning_spaces(line)[0]
+      next if without_spaces_line.start_with?('#')
+
+      words_array = without_spaces_line.split
+      first_word_in_line = words_array[0]
+      yield(words_array, first_word_in_line, index, line, without_spaces_line)
+    end
+  end
+
+  def count_spaces
+    iterate_thrgh_lines do |_, first_word_in_line, index, line|
+      spaces_counter_line = delete_beginning_spaces(line)[1]
+
+      spaces_counter_next_line = if @file_lines[index + 1].nil?
+                                   spaces_counter_line + 2
+                                 else
+                                   delete_beginning_spaces(@file_lines[index + 1])[1]
+                                 end
+
+      spaces_counter_previous_line = if @file_lines[index + 1].nil?
+                                       -2
+                                     else
+                                       delete_beginning_spaces(@file_lines[index - 1])[1]
+                                     end
+
+      yield(index, first_word_in_line, spaces_counter_next_line, spaces_counter_line, spaces_counter_previous_line)
+    end
+  end
+end
 
 class ErrorsChecker
+  include HelperModule
   attr_reader :keywords, :no_offenses, :errors
   def initialize(file_lines, file_name)
     @file_lines = file_lines
     @file_name = file_name
     @keywords = %w[def class do if unless module begin while]
     @no_offenses = true
-    @opening_signs = { brace: '{', bracket: '[', parenthesis: '(', pipe: '|' }
-    @closing_signs = { brace: '}', bracket: ']', parenthesis: ')', pipe: '|' }
+    @opening_tokens = ['{', '[', '(']
+    @closing_tokens = ['}', ']', ')']
+    @tokens_hash = { '}' => '{', ']' => '[', ')' => '(' }
     @errors = []
   end
 
@@ -21,43 +65,34 @@ class ErrorsChecker
       got_offenses = true
       @errors << "Trailing space at the end of the line number #{index + 1} in #{@file_name}"
     end
-    return 'Trailing space detected' if got_offenses
+    got_offenses
   end
 
-  # rubocop:disable Metrics/MethodLength
   def correct_indentation
     got_offenses = false
-    @file_lines.each_with_index do |line, index|
-      without_spaces_line = delete_beginning_spaces(line)[0]
-      without_spaces_previous_line = delete_beginning_spaces(@file_lines[index - 1])[0]
-      spaces_counter_line = delete_beginning_spaces(line)[1]
-      @file_lines[index + 1].nil? ? spaces_counter_next_line = spaces_counter_line + 2 : spaces_counter_next_line = delete_beginning_spaces(@file_lines[index + 1])[1]
-      @file_lines[index - 1].nil? ? spaces_counter_previous_line = -2 : spaces_counter_previous_line = delete_beginning_spaces(@file_lines[index - 1])[1]
-      words_array = without_spaces_line.split
-      first_word_in_line = words_array[0]
+
+    count_spaces do |index, first_word, s_counter_next_line, s_counter_line, s_counter_prev_line|
+      without_s_prev_line = delete_beginning_spaces(@file_lines[index - 1])[0]
+
       @keywords.each do |keyword|
-        next unless keyword == first_word_in_line && spaces_counter_next_line - spaces_counter_line != 2
+        next unless keyword == first_word && s_counter_next_line - s_counter_line != 2
 
         @no_offenses = false
         got_offenses = true
         @errors << "Wrong indentation at line #{index + 2} in #{@file_name}"
       end
-      next unless first_word_in_line == 'end' && without_spaces_previous_line != 'end' && spaces_counter_previous_line - spaces_counter_line != 2
+      next unless first_word == 'end' && without_s_prev_line != 'end' && s_counter_prev_line - s_counter_line != 2
 
       @no_offenses = false
       got_offenses = true
       @errors << "End keyword isn't indented correctly at line #{index + 1} in #{@file_name}"
     end
-    return 'Wrong indentation detected' if got_offenses
+    got_offenses
   end
-  # rubocop:enable Metrics/MethodLength
 
   def empty_lines
     got_offenses = false
-    @file_lines.each_with_index do |line, index|
-      without_spaces_line = delete_beginning_spaces(line)[0]
-      words_array = without_spaces_line.split
-      first_word_in_line = words_array[0]
+    iterate_thrgh_lines do |_, first_word_in_line, index|
       @keywords.each do |keyword|
         next unless keyword == first_word_in_line && @file_lines[index + 1].empty?
 
@@ -66,7 +101,7 @@ class ErrorsChecker
         @errors << "Unnecessary empty line (number: #{index + 2}) in #{@file_name}"
       end
     end
-    return 'Unnecessary empty line detected' if got_offenses
+    got_offenses
   end
 
   def empty_line_at_bottom
@@ -76,24 +111,20 @@ class ErrorsChecker
       got_offenses = true
       @errors << "Please add an empty line at the bottom of your file #{@file_name}"
     end
-    return 'Please add an empty line at the bottom of your file' if got_offenses
+    got_offenses
   end
 
-  # rubocop:disable Metrics/MethodLength
   def end_keyword
     got_offenses = false
     keyword_counter = 0
     end_counter = 0
-    @file_lines.each do |line|
-      without_spaces_line = delete_beginning_spaces(line)[0]
-      next if without_spaces_line.start_with?('#')
-
-      words_array = without_spaces_line.split
+    iterate_thrgh_lines do |words_array|
       @keywords.each do |keyword|
         keyword_counter += 1 if words_array.include?(keyword)
       end
       end_counter += 1 if words_array.include?('end')
     end
+
     if keyword_counter > end_counter
       @no_offenses = false
       got_offenses = true
@@ -103,100 +134,59 @@ class ErrorsChecker
       got_offenses = true
       @errors << "Your file #{@file_name} has an extra end keyword."
     end
-    return 'Syntax error!' if got_offenses
+    got_offenses
   end
 
-  def braces_brackets_parenthesis
+  def tokens
     got_offenses = false
-    opening_brace_counter = 0
-    opening_bracket_counter = 0
-    opening_parenthesis_counter = 0
-    closing_brace_counter = 0
-    closing_bracket_counter = 0
-    closing_parenthesis_counter = 0
+    stack = []
 
-    @file_lines.each do |line|
-      without_spaces_line = delete_beginning_spaces(line)[0]
-      next if without_spaces_line.start_with?('#')
-
-      opening_brace_counter += 1 if without_spaces_line.include?(@opening_signs[:brace])
-      opening_bracket_counter += 1 if without_spaces_line.include?(@opening_signs[:bracket])
-      opening_parenthesis_counter += 1 if without_spaces_line.include?(@opening_signs[:parenthesis])
-      closing_brace_counter += 1 if without_spaces_line.include?(@closing_signs[:brace])
-      closing_bracket_counter += 1 if without_spaces_line.include?(@closing_signs[:bracket])
-      closing_parenthesis_counter += 1 if without_spaces_line.include?(@closing_signs[:parenthesis])
+    iterate_thrgh_lines do |_, _, _, _, without_spaces_line|
+      without_spaces_line.each_char do |bracket|
+        if @opening_tokens.include?(bracket)
+          stack << bracket
+        elsif @closing_tokens.include?(bracket)
+          got_offenses = true unless stack.pop == @tokens_hash[bracket]
+        end
+      end
     end
-
-    if opening_brace_counter != closing_brace_counter
+    got_offenses = true unless stack.empty?
+    if got_offenses
+      @errors << "Missing '{', '}', '[', ']', '(' or ')' in #{@file_name}"
       @no_offenses = false
-      got_offenses = true
-      @errors << "Missing '{' or '}' in #{@file_name}"
     end
-
-    if opening_bracket_counter != closing_bracket_counter
-      @no_offenses = false
-      got_offenses = true
-      @errors << "Missing '[' or ']' in #{@file_name}"
-    end
-
-    if opening_parenthesis_counter != closing_parenthesis_counter
-      @no_offenses = false
-      got_offenses = true
-      @errors << "Missing '(' or ')' in #{@file_name}"
-    end
-    return 'curly braces, square brackets or parenthesis is missing' if got_offenses
+    got_offenses
   end
 
   def pipes
     got_offenses = false
     pipe_spaces = after_before_pipe_space
-    if pipe_spaces.class == String
-      return pipe_spaces
-    else
-      opening_pipes_counter = 0
-      closing_pipes_counter = 0
+    return pipe_spaces if pipe_spaces
 
-      @file_lines.each do |line|
-        without_spaces_line = delete_beginning_spaces(line)[0]
-        next if without_spaces_line.start_with?('#')
+    opening_pipes_counter = 0
+    closing_pipes_counter = 0
 
-        words_array = without_spaces_line.split
-        words_array.each do |word|
-          opening_pipes_counter += 1 if word.start_with?('|')
-          closing_pipes_counter += 1 if word.end_with?('|')
-        end
-      end
-
-      if opening_pipes_counter != closing_pipes_counter
-        @no_offenses = false
-        got_offenses = true
-        @errors << "'|' is missing in #{@file_name}"
+    iterate_thrgh_lines do |words_array|
+      words_array.each do |word|
+        opening_pipes_counter += 1 if word.start_with?('|')
+        closing_pipes_counter += 1 if word.end_with?('|')
       end
     end
-    return "'|' is missing" if got_offenses
+
+    if opening_pipes_counter != closing_pipes_counter
+      @no_offenses = false
+      got_offenses = true
+      @errors << "'|' is missing in #{@file_name}"
+    end
+    got_offenses
   end
-  # rubocop:enable Metrics/MethodLength
 
   private
 
-  def delete_beginning_spaces(str)
-    spaces_counter = 0
-    str.each_char do |char|
-      break unless char == ' '
-
-      str = str.delete_prefix char
-      spaces_counter += 1
-    end
-    [str, spaces_counter]
-  end
-
   def after_before_pipe_space
     got_offenses = false
-    @file_lines.each_with_index do |line, index|
-      without_spaces_line = delete_beginning_spaces(line)[0]
-      next if without_spaces_line.start_with?('#')
 
-      words_array = without_spaces_line.split
+    iterate_thrgh_lines do |words_array, _, index|
       words_array.each do |word|
         next unless word == '|'
 
@@ -205,8 +195,6 @@ class ErrorsChecker
         @errors << "Unwanted space before/after '|' in line number #{index + 1}"
       end
     end
-    return "Unwanted space before/after '|'" if got_offenses
+    got_offenses
   end
 end
-
-# rubocop:enable Metrics/PerceivedComplexity, Style/GuardClause, Layout/LineLength, Metrics/ClassLength, Metrics/CyclomaticComplexity

@@ -9,53 +9,45 @@ describe ErrorsChecker do
 
   describe '#trailing_spaces' do
     it "returns an error if there's a trainling space at the end of the line" do
-      expect(errors_instance.trailing_spaces).to eql('Trailing space detected')
+      expect(errors_instance.trailing_spaces).to eql(true)
     end
   end
 
   describe '#correct_indentation' do
     it "returns an error if the line isn't indented correctly" do
-      expect(errors_instance.correct_indentation).to eql('Wrong indentation detected')
+      expect(errors_instance.correct_indentation).to eql(true)
     end
   end
 
   describe '#empty_lines' do
     it "returns an error if there's an unnecessary empty line" do
-      expect(errors_instance.empty_lines).to eql('Unnecessary empty line detected')
+      expect(errors_instance.empty_lines).to eql(true)
     end
   end
 
   describe '#empty_line_at_bottom' do
     it 'returns an error if there is no empty line at the of the file' do
-      expect(errors_instance.empty_line_at_bottom).to eql('Please add an empty line at the bottom of your file')
+      expect(errors_instance.empty_line_at_bottom).to eql(true)
     end
   end
 
   describe '#end_keyword' do
     it 'returns an error if there is a missing end or an extra end' do
-      expect(errors_instance.end_keyword).to eql('Syntax error!')
+      expect(errors_instance.end_keyword).to eql(true)
     end
   end
 
   # rubocop:disable Layout/LineLength
-  describe '#braces_brackets_parenthesis' do
+  describe '#tokens' do
     it 'returns an error if there is a missing curly brace, square bracket or parenthesis' do
-      expect(errors_instance.braces_brackets_parenthesis).to eql('curly braces, square brackets or parenthesis is missing')
+      expect(errors_instance.tokens).to eql(true)
     end
   end
   # rubocop:enable Layout/LineLength
 
   describe '#pipes' do
-    context 'there is an unnecessary space before or after the pipe' do
-      it 'returns an error if there is a space before or after the pipe' do
-        expect(errors_instance.pipes).to eql("Unwanted space before/after '|'")
-      end
-    end
-
-    context 'a pipe is missing' do
-      it "returns an error only if there's no spaces before or after the pipe" do
-        expect(errors_instance.pipes).not_to eql("'|' is missing")
-      end
+    it 'returns an error if there is a space before or after the pipe or a missing pipe' do
+      expect(errors_instance.pipes).to eql(true)
     end
   end
 end

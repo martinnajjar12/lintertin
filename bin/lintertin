@@ -15,7 +15,7 @@ if select_files != [] && File.exist?(select_files[0])
     check.empty_lines
     check.empty_line_at_bottom
     check.end_keyword
-    check.braces_brackets_parenthesis
+    check.tokens
     check.pipes
     if check.no_offenses
       puts "#{file_name} has no offenses".green
